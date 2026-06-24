@@ -5,7 +5,7 @@ import type { Question, SessionSettings } from '@/lib/types'
 
 export async function POST(req: NextRequest) {
   const body = await req.json() as { name?: string; quiz: Question[]; settings: SessionSettings }
-  const id = Math.random().toString(36).slice(2, 10).toUpperCase()
+  const id = Math.random().toString(36).slice(2, 8).toUpperCase()
   const hostToken = uuid()
   setSession(id, {
     id,
