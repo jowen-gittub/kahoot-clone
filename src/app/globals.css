@@ -3,6 +3,18 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Wärtsilä brand */
+  --w-navy:        #003057;
+  --w-navy-dark:   #00233f;
+  --w-navy-light:  #004d8a;
+  --w-orange:      #FF5000;
+  --w-orange-dark: #cc4000;
+  --w-gray-50:     #f5f6f7;
+  --w-gray-100:    #e8eaec;
+  --w-gray-400:    #9aa0a8;
+  --w-gray-600:    #5f6873;
+  --w-gray-800:    #2c3440;
 }
 
 @theme inline {
@@ -12,15 +24,16 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+button, [role="button"] {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }

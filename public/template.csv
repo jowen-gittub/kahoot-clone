@@ -1,0 +1,4 @@
+type,question,option_a,option_b,option_c,option_d,correct,time_limit
+multiple-choice,What is the capital of France?,Berlin,Madrid,Paris,Rome,Paris,20
+true-false,The Earth is flat,,,,,false,15
+open-text,What year did World War II end?,,,,,1945,30
