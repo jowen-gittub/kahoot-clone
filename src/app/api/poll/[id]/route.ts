@@ -25,5 +25,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     if (updated) session = updated
   }
 
-  return NextResponse.json(session)
+  // Never expose the host token to clients
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { hostToken: _, ...safeSession } = session
+  return NextResponse.json(safeSession)
 }

@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession, updateSession } from '@/lib/store'
+import { validateHostToken } from '@/lib/auth'
 import type { SessionPhase } from '@/lib/types'
 
 export async function POST(req: NextRequest) {
   const { id, action } = await req.json() as { id: string; action: string }
+  const authError = validateHostToken(req, id)
+  if (authError) return authError
   const session = getSession(id)
   if (!session) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 

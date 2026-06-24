@@ -4,6 +4,9 @@ import { getSession, updateSession } from '@/lib/store'
 
 export async function POST(req: NextRequest) {
   const { sessionId, name, team } = await req.json() as { sessionId: string; name: string; team?: string }
+  if (!name || name.trim().length === 0 || name.length > 30) {
+    return NextResponse.json({ error: 'Name must be 1–30 characters' }, { status: 400 })
+  }
   const session = getSession(sessionId)
   if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
   if (session.phase !== 'lobby') return NextResponse.json({ error: 'Session already started' }, { status: 400 })

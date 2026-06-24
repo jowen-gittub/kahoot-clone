@@ -22,10 +22,14 @@ function useSession(id: string) {
   return { session, refresh: poll }
 }
 
+function getHostToken(id: string) {
+  return localStorage.getItem(`kahootklone-host-token-${id}`) ?? ''
+}
+
 async function advance(id: string, action: string) {
   await fetch('/api/session/advance', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'x-host-token': getHostToken(id) },
     body: JSON.stringify({ id, action }),
   })
 }
@@ -276,14 +280,26 @@ export default function SessionPage() {
               </button>
             )}
             {session.phase === 'done' && (
-              <a
-                href={`/api/export/${id}`}
-                download
+              <button
+                onClick={async () => {
+                  const res = await fetch(`/api/export/${id}`, {
+                    headers: { 'x-host-token': getHostToken(id) },
+                  })
+                  const blob = await res.blob()
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  const cd = res.headers.get('content-disposition') ?? ''
+                  const match = cd.match(/filename="([^"]+)"/)
+                  a.href = url
+                  a.download = match?.[1] ?? 'results.xlsx'
+                  a.click()
+                  URL.revokeObjectURL(url)
+                }}
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded font-semibold text-white mt-2"
                 style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
               >
                 ↓ Export results (.xlsx)
-              </a>
+              </button>
             )}
           </div>
         )}

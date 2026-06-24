@@ -172,8 +172,9 @@ export default function AdminPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: current.name || 'Quiz', quiz: current.questions, settings: current.settings }),
     })
-    const { id } = await res.json()
+    const { id, hostToken } = await res.json()
     localStorage.setItem('kahootklone-active-session', id)
+    localStorage.setItem(`kahootklone-host-token-${id}`, hostToken)
     router.push(`/session/${id}`)
   }
 
@@ -241,9 +242,10 @@ export default function AdminPage() {
               <button
                 onClick={async () => {
                   if (activeSession) {
+                    const token = localStorage.getItem(`kahootklone-host-token-${activeSession}`) ?? ''
                     await fetch('/api/session/advance', {
                       method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
+                      headers: { 'Content-Type': 'application/json', 'x-host-token': token },
                       body: JSON.stringify({ id: activeSession, action: 'cancel' }),
                     })
                   }

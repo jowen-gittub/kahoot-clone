@@ -6,6 +6,9 @@ export async function POST(req: NextRequest) {
   const { sessionId, playerId, answer } = await req.json() as {
     sessionId: string; playerId: string; answer: string
   }
+  if (!answer || answer.length > 500) {
+    return NextResponse.json({ error: 'Invalid answer' }, { status: 400 })
+  }
   const session = getSession(sessionId)
   if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
   if (session.phase !== 'question') return NextResponse.json({ error: 'Not in question phase' }, { status: 400 })

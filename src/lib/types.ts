@@ -35,6 +35,7 @@ export type QuestionResult = {
 export type Session = {
   id: string
   name: string
+  hostToken: string
   quiz: Question[]
   players: Record<string, Player>
   phase: SessionPhase

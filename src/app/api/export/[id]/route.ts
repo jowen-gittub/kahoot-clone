@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import ExcelJS from 'exceljs'
 import { getSession } from '@/lib/store'
+import { validateHostToken } from '@/lib/auth'
 
 const GREEN = { argb: 'FF22C55E' }
 const RED   = { argb: 'FFEF4444' }
@@ -8,8 +9,10 @@ const WHITE = { argb: 'FFFFFFFF' }
 const BLACK = { argb: 'FF000000' }
 const NAVY  = { argb: 'FF003057' }
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const authError = validateHostToken(req, id)
+  if (authError) return authError
   const session = getSession(id)
   if (!session) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
