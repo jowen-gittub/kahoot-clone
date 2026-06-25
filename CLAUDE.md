@@ -89,7 +89,7 @@ type Question = {
 - No rate limiting on join endpoint
 - QR code links to `/play/[id]` directly, bypassing the `/join` name-entry page
 - Local folder is named `Typing/kahoot-klone` — rename `Typing` to `KahootKlone` when closing Claude Code
-- Vercel KV free tier: 256MB, 30k requests/day — sufficient for workshops
+- Vercel KV free tier: 256MB, 30k requests/day — sufficient for workshops (resets after 24hrs)
 
 ## Dev
 
