@@ -171,10 +171,10 @@ export default function SessionPage() {
             </div>
 
             <div className="space-y-1">
-              <p className="text-3xl font-bold text-white leading-snug">{question.text}</p>
               {question.category && (
                 <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>{question.category}</p>
               )}
+              <p className="text-3xl font-bold text-white leading-snug">{question.text}</p>
             </div>
 
             {question.options && (
