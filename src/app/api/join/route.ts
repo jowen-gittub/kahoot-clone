@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   if (!name || name.trim().length === 0 || name.length > 30) {
     return NextResponse.json({ error: 'Name must be 1–30 characters' }, { status: 400 })
   }
-  const session = getSession(sessionId)
+  const session = await getSession(sessionId)
   if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
   if (session.phase !== 'lobby') return NextResponse.json({ error: 'This quiz has already started. Ask the host to start a new session.', code: 'STARTED' }, { status: 400 })
 
@@ -16,6 +16,6 @@ export async function POST(req: NextRequest) {
 
   const playerId = uuid()
   const players = { ...session.players, [playerId]: { name, score: 0, streak: 0, team, lastSeen: Date.now() } }
-  updateSession(sessionId, { players })
+  await updateSession(sessionId, { players })
   return NextResponse.json({ playerId })
 }

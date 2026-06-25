@@ -3,7 +3,7 @@ import { getSession, updateSession } from '@/lib/store'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  let session = getSession(id)
+  let session = await getSession(id)
   if (!session) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   // Auto-reveal when time runs out (guard against duplicates)
@@ -15,7 +15,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     Date.now() - session.questionStartedAt >= session.quiz[session.currentQuestion].timeLimit * 1000
   ) {
     const q = session.quiz[session.currentQuestion]
-    const updated = updateSession(id, {
+    const updated = await updateSession(id, {
       phase: 'reveal',
       history: [...session.history, {
         questionIndex: session.currentQuestion,

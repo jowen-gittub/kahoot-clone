@@ -1,22 +1,26 @@
+import { Redis } from '@upstash/redis'
 import type { Session } from './types'
 
-// Survive hot reloads in dev by attaching to the global object
-const g = global as typeof global & { __sessions?: Map<string, Session> }
-if (!g.__sessions) g.__sessions = new Map<string, Session>()
-const sessions = g.__sessions
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+})
 
-export function getSession(id: string): Session | undefined {
-  return sessions.get(id)
+const key = (id: string) => `session:${id}`
+
+export async function getSession(id: string): Promise<Session | null> {
+  return redis.get<Session>(key(id))
 }
 
-export function setSession(id: string, session: Session): void {
-  sessions.set(id, session)
+export async function setSession(id: string, session: Session): Promise<void> {
+  // Sessions expire after 24 hours
+  await redis.set(key(id), session, { ex: 86400 })
 }
 
-export function updateSession(id: string, patch: Partial<Session>): Session | null {
-  const session = sessions.get(id)
+export async function updateSession(id: string, patch: Partial<Session>): Promise<Session | null> {
+  const session = await getSession(id)
   if (!session) return null
   const updated = { ...session, ...patch }
-  sessions.set(id, updated)
+  await setSession(id, updated)
   return updated
 }

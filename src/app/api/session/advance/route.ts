@@ -5,9 +5,9 @@ import type { SessionPhase } from '@/lib/types'
 
 export async function POST(req: NextRequest) {
   const { id, action } = await req.json() as { id: string; action: string }
-  const authError = validateHostToken(req, id)
+  const authError = await validateHostToken(req, id)
   if (authError) return authError
-  const session = getSession(id)
+  const session = await getSession(id)
   if (!session) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   let patch: Partial<typeof session> = {}
@@ -39,6 +39,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
   }
 
-  const updated = updateSession(id, patch)
+  const updated = await updateSession(id, patch)
   return NextResponse.json(updated)
 }

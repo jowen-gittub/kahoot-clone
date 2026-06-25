@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json() as { name?: string; quiz: Question[]; settings: SessionSettings }
   const id = Math.random().toString(36).slice(2, 8).toUpperCase()
   const hostToken = uuid()
-  setSession(id, {
+  await setSession(id, {
     id,
     name: body.name ?? 'Quiz',
     hostToken,
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id')
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
-  const session = getSession(id)
+  const session = await getSession(id)
   if (!session) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { hostToken: _, ...safeSession } = session

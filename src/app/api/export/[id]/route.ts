@@ -12,9 +12,9 @@ const GRAY   = { argb: 'FFDDDDDD' }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const authError = validateHostToken(req, id)
+  const authError = await validateHostToken(req, id)
   if (authError) return authError
-  const session = getSession(id)
+  const session = await getSession(id)
   if (!session) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const wb = new ExcelJS.Workbook()

@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   if (!answer || answer.length > 500) {
     return NextResponse.json({ error: 'Invalid answer' }, { status: 400 })
   }
-  const session = getSession(sessionId)
+  const session = await getSession(sessionId)
   if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
   if (session.phase !== 'question') return NextResponse.json({ error: 'Not in question phase' }, { status: 400 })
   if (session.answers[playerId]) return NextResponse.json({ error: 'Already answered' }, { status: 400 })
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     }],
   } : {}
 
-  updateSession(sessionId, {
+  await updateSession(sessionId, {
     answers: updatedAnswers,
     players: updatedPlayers,
     ...autoRevealPatch,

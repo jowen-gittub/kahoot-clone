@@ -3,13 +3,13 @@ import { getSession, updateSession } from '@/lib/store'
 
 export async function POST(req: NextRequest) {
   const { sessionId, playerId } = await req.json() as { sessionId: string; playerId: string }
-  const session = getSession(sessionId)
+  const session = await getSession(sessionId)
   if (!session || !session.players[playerId]) return NextResponse.json({ ok: false })
 
   const players = {
     ...session.players,
     [playerId]: { ...session.players[playerId], lastSeen: Date.now() },
   }
-  updateSession(sessionId, { players })
+  await updateSession(sessionId, { players })
   return NextResponse.json({ ok: true })
 }
