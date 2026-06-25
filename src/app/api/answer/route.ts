@@ -33,7 +33,9 @@ export async function POST(req: NextRequest) {
   const onlinePlayerIds = Object.entries(updatedPlayers)
     .filter(([, p]) => Date.now() - p.lastSeen < 15000)
     .map(([id]) => id)
-  const allAnswered = onlinePlayerIds.length > 0 &&
+  const alreadyRevealed = session.history.some(h => h.questionIndex === session.currentQuestion)
+  const allAnswered = !alreadyRevealed &&
+    onlinePlayerIds.length > 0 &&
     onlinePlayerIds.every(pid => updatedAnswers[pid])
 
   const autoRevealPatch = allAnswered ? {

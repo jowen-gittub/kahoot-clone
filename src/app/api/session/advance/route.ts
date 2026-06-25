@@ -16,13 +16,14 @@ export async function POST(req: NextRequest) {
     patch = { phase: 'question' as SessionPhase, questionStartedAt: Date.now(), answers: {} }
   } else if (action === 'reveal') {
     const q = session.quiz[session.currentQuestion]
-    const result = {
+    const alreadyRevealed = session.history.some(h => h.questionIndex === session.currentQuestion)
+    const newHistory = alreadyRevealed ? session.history : [...session.history, {
       questionIndex: session.currentQuestion,
       questionText: q.text,
       correct: q.correct,
       answers: { ...session.answers },
-    }
-    patch = { phase: 'reveal' as SessionPhase, history: [...session.history, result] }
+    }]
+    patch = { phase: 'reveal' as SessionPhase, history: newHistory }
   } else if (action === 'leaderboard') {
     patch = { phase: 'leaderboard' as SessionPhase }
   } else if (action === 'next') {

@@ -6,8 +6,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   let session = getSession(id)
   if (!session) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  // Auto-reveal when time runs out
+  // Auto-reveal when time runs out (guard against duplicates)
+  const alreadyRevealed = session.history.some(h => h.questionIndex === session!.currentQuestion)
   if (
+    !alreadyRevealed &&
     session.phase === 'question' &&
     session.questionStartedAt !== null &&
     Date.now() - session.questionStartedAt >= session.quiz[session.currentQuestion].timeLimit * 1000

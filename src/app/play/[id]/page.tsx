@@ -1,22 +1,8 @@
 'use client'
 
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'next/navigation'
-import type { Session } from '@/lib/types'
-
-function useSession(id: string) {
-  const [session, setSession] = useState<Session | null>(null)
-  const poll = useCallback(async () => {
-    const res = await fetch(`/api/poll/${id}`)
-    if (res.ok) setSession(await res.json())
-  }, [id])
-  useEffect(() => {
-    poll()
-    const interval = setInterval(poll, 1500)
-    return () => clearInterval(interval)
-  }, [poll])
-  return { session, refresh: poll }
-}
+import { useSession } from '@/lib/useSession'
 
 // Wärtsilä-branded option colors: navy, orange, teal, slate
 const OPTION_STYLES = [
@@ -103,7 +89,12 @@ export default function PlayPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId: id, name: name.trim() }),
     })
-    if (!res.ok) { setJoinError((await res.json()).error); setJoining(false); return }
+    if (!res.ok) {
+      const body = await res.json()
+      setJoinError(body.error)
+      setJoining(false)
+      return
+    }
     const { playerId: pid } = await res.json()
     sessionStorage.setItem(storageKey, pid)
     setPlayerId(pid)

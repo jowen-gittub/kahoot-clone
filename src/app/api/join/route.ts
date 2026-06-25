@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   }
   const session = getSession(sessionId)
   if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-  if (session.phase !== 'lobby') return NextResponse.json({ error: 'Session already started' }, { status: 400 })
+  if (session.phase !== 'lobby') return NextResponse.json({ error: 'This quiz has already started. Ask the host to start a new session.', code: 'STARTED' }, { status: 400 })
 
   const nameTaken = Object.values(session.players).some(p => p.name.toLowerCase() === name.trim().toLowerCase())
   if (nameTaken) return NextResponse.json({ error: 'Name already taken — choose another' }, { status: 400 })

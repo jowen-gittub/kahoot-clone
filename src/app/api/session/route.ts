@@ -28,5 +28,7 @@ export async function GET(req: NextRequest) {
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
   const session = getSession(id)
   if (!session) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json(session)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { hostToken: _, ...safeSession } = session
+  return NextResponse.json(safeSession)
 }

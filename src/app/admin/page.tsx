@@ -94,13 +94,16 @@ export default function AdminPage() {
   }
 
   function parseRows(rows: Record<string, string>[]): Question[] {
-    return rows
+    const invalid: number[] = []
+    const questions = rows
       .filter(r => r.question || r.text)
-      .map(r => {
+      .map((r, i) => {
         const type = (r.type as QuestionType) || 'multiple-choice'
         const options = type === 'multiple-choice'
           ? [r.option_a, r.option_b, r.option_c, r.option_d].filter(Boolean)
           : undefined
+        if (!r.correct?.trim()) invalid.push(i + 1)
+        if (type === 'multiple-choice' && (!options || options.length < 2)) invalid.push(i + 1)
         return {
           id: uuid(),
           type,
@@ -111,11 +114,17 @@ export default function AdminPage() {
           explanation: r.explanation || '',
         }
       })
+    if (invalid.length > 0) {
+      setError(`Row${invalid.length > 1 ? 's' : ''} ${invalid.join(', ')}: missing correct answer or too few options.`)
+    }
+    return questions.filter(q => q.correct?.trim())
   }
 
   function processFile(file: File) {
     setError('')
     setUploadedFileName(file.name)
+    const nameFromFile = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ').trim()
+    if (!current.name) handleNameChange(nameFromFile)
     if (file.name.endsWith('.csv')) {
       Papa.parse(file, {
         header: true,
@@ -168,6 +177,8 @@ export default function AdminPage() {
 
   async function startSession() {
     if (current.questions.length === 0) { setError('Add at least one question.'); return }
+    const invalid = current.questions.filter(q => !q.correct?.trim() || (q.type === 'multiple-choice' && (!q.options || q.options.filter(Boolean).length < 2)))
+    if (invalid.length > 0) { setError(`${invalid.length} question${invalid.length > 1 ? 's' : ''} have missing answers or options.`); return }
     setLoading(true)
     const res = await fetch('/api/session', {
       method: 'POST',
@@ -492,6 +503,14 @@ export default function AdminPage() {
                   <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--w-orange)' }}>{q.type}</span>
                   <p className="text-sm mt-0.5" style={{ color: 'var(--w-gray-800)' }}>{i + 1}. {q.text}</p>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--w-gray-400)' }}>Correct: {q.correct}</p>
+                  <textarea
+                    value={q.explanation ?? ''}
+                    onChange={e => setQuestions(prev => prev.map(x => x.id === q.id ? { ...x, explanation: e.target.value } : x))}
+                    placeholder="Add explanation…"
+                    rows={1}
+                    className="mt-1 w-full rounded px-2 py-1 text-xs focus:outline-none resize-none"
+                    style={{ border: '1px solid var(--w-gray-100)', color: 'var(--w-gray-600)', background: q.explanation ? 'var(--w-gray-50)' : 'transparent' }}
+                  />
                 </div>
                 <div className="flex flex-col gap-1 shrink-0" style={{ width: '72px' }}>
                   <button onClick={() => removeQuestion(q.id)} className="w-full text-xs px-2 py-1 rounded border hover:text-red-500 hover:border-red-300 transition-colors" style={{ color: 'var(--w-gray-600)', borderColor: 'var(--w-gray-400)', background: 'var(--w-gray-50)' }}>
