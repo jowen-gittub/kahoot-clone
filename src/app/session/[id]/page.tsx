@@ -60,7 +60,7 @@ export default function SessionPage() {
 
   return (
     <div className="min-h-screen p-8" style={{ background: 'var(--w-navy)' }}>
-      <div className="mx-auto space-y-6" style={{ maxWidth: '42rem' }}>
+      <div className="mx-auto space-y-6" style={{ maxWidth: '56rem' }}>
 
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -108,11 +108,11 @@ export default function SessionPage() {
                     { url: playUrl || '/play/' + id },
                     { url: playUrl ? new URL(playUrl).origin + '/join' : '/join' },
                   ].map(({ url }) => (
-                    <div key={url} className="space-y-1">
-                      <code className="block text-sm break-all" style={{ color: 'rgba(255,255,255,0.7)' }}>{url}</code>
+                    <div key={url} className="flex items-center gap-3">
+                      <code className="text-sm flex-1 break-all" style={{ color: 'rgba(255,255,255,0.7)' }}>{url}</code>
                       <button
                         onClick={() => navigator.clipboard.writeText(url)}
-                        className="text-xs font-semibold px-3 py-1 rounded"
+                        className="text-xs font-semibold shrink-0 px-3 py-1 rounded"
                         style={{ background: 'var(--w-orange)', color: 'white' }}
                       >
                         Copy
