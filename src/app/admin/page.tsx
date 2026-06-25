@@ -501,9 +501,8 @@ export default function AdminPage() {
                     style={{ color: 'var(--w-gray-600)', borderColor: 'var(--w-gray-400)', background: 'var(--w-gray-50)' }}>▼</button>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--w-orange)' }}>{q.type}</span>
-                  <p className="text-sm mt-0.5" style={{ color: 'var(--w-gray-800)' }}>{i + 1}. {q.text}</p>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--w-gray-400)' }}>Correct: {q.correct}</p>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--w-gray-800)' }}>{i + 1}. {q.text}</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--w-gray-400)' }}>{q.type} · Correct: {q.correct}</p>
                   <textarea
                     value={q.explanation ?? ''}
                     onChange={e => setQuestions(prev => prev.map(x => x.id === q.id ? { ...x, explanation: e.target.value } : x))}
